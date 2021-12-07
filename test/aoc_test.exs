@@ -192,7 +192,7 @@ defmodule AocTest do
     %Location{depth: depth, x: x} =
       input
       |> Course.create()
-      |> Course.navigate()
+      |> Course.old_navigate()
 
     assert depth * x == 2_120_749
   end
@@ -233,5 +233,15 @@ defmodule AocTest do
   you get if you multiply your final horizontal position by your final depth?
   """
   test :day_02_part_2 do
+    input =
+      Path.expand("data/d02.txt", __DIR__)
+      |> File.read!()
+
+    %Location{depth: depth, x: x} =
+      input
+      |> Course.create()
+      |> Course.navigate()
+
+    assert depth * x == 2_138_382_217
   end
 end
