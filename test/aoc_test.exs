@@ -76,7 +76,7 @@ defmodule AocTest do
       |> Enum.map(&String.to_integer/1)
 
     result =
-      Aoc.parse_depth_report(input)
+      Aoc.parse_depth_report_for_two_items(input)
 
     assert result == 1288
   end
@@ -128,5 +128,16 @@ defmodule AocTest do
   than the previous sum?
   """
   test :day_01_part_2 do
+    input =
+      Path.expand("data/d01.txt", __DIR__)
+      |> File.read!()
+      |> String.trim()
+      |> String.split("\n", trim: true)
+      |> Enum.map(&String.to_integer/1)
+
+    result =
+      Aoc.parse_depth_report_for_window_of_three_items(input)
+
+    assert result == 1311
   end
 end
