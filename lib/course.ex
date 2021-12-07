@@ -8,7 +8,8 @@ defmodule Course do
   @doc """
   iex> Course.create("forward 5, down 5, forward 8, up 3, down 8, forward 2")
   ...> |> Course.navigate()
-  %Location{depth: 10, x: 15}
+  ...> |> then(fn %Location{depth: depth, x: x} -> depth * x end)
+  150
   """
   def navigate(%Course{} = course) do
     Enum.reduce(course.steps, course.origin, &Location.navigate(&2, &1))
