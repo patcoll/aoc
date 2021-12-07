@@ -76,7 +76,7 @@ defmodule AocTest do
       |> Enum.map(&String.to_integer/1)
 
     result =
-      Aoc.parse_depth_report_for_two_items(input)
+      Aoc.parse_depth_report(input)
 
     assert result == 1288
   end
@@ -136,7 +136,7 @@ defmodule AocTest do
       |> Enum.map(&String.to_integer/1)
 
     result =
-      Aoc.parse_depth_report_for_window_of_three_items(input)
+      Aoc.parse_depth_report(input, 3)
 
     assert result == 1311
   end
