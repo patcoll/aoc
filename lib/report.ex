@@ -42,35 +42,8 @@ defmodule Report do
   ...> |> Report.oxygen_generator_rating()
   23
   """
-  def oxygen_generator_rating(%Report{elements: [first_element | _]} = report) do
-    (0..(length(first_element) - 1))
-    |> Enum.reduce_while(report.elements, fn index, elements ->
-      column_values =
-        elements
-        |> Enum.zip()
-        |> Enum.at(index)
-        |> Tuple.to_list()
-
-      most_common_value =
-        column_values
-        |> count_common_bit_for_column()
-        |> sort_by_count(:most_common)
-        |> get_sorted_value(:most_common)
-
-      filtered_elements =
-        Enum.filter(elements, fn element ->
-          Enum.at(element, index) == most_common_value
-        end)
-
-      if length(filtered_elements) > 1 do
-        {:cont, filtered_elements}
-      else
-        {:halt, filtered_elements}
-      end
-    end)
-    |> Enum.at(0)
-    |> Enum.join()
-    |> Input.parse_binary()
+  def oxygen_generator_rating(%Report{} = report) do
+    reduce_with_common_bit_for_each_column(report, :most_common)
   end
 
   @doc """
@@ -78,35 +51,8 @@ defmodule Report do
   ...> |> Report.co2_scrubber_rating()
   10
   """
-  def co2_scrubber_rating(%Report{elements: [first_element | _]} = report) do
-    (0..(length(first_element) - 1))
-    |> Enum.reduce_while(report.elements, fn index, elements ->
-      column_values =
-        elements
-        |> Enum.zip()
-        |> Enum.at(index)
-        |> Tuple.to_list()
-
-      least_common_value =
-        column_values
-        |> count_common_bit_for_column()
-        |> sort_by_count(:least_common)
-        |> get_sorted_value(:least_common)
-
-      filtered_elements =
-        Enum.filter(elements, fn element ->
-          Enum.at(element, index) == least_common_value
-        end)
-
-      if length(filtered_elements) > 1 do
-        {:cont, filtered_elements}
-      else
-        {:halt, filtered_elements}
-      end
-    end)
-    |> Enum.at(0)
-    |> Enum.join()
-    |> Input.parse_binary()
+  def co2_scrubber_rating(%Report{} = report) do
+    reduce_with_common_bit_for_each_column(report, :least_common)
   end
 
   defp sort_by_count([{_, _} | _] = values, sort_input) do
@@ -141,6 +87,37 @@ defmodule Report do
       |> sort_by_count(sort_input)
       |> get_sorted_value(sort_input)
     end)
+    |> Enum.join()
+    |> Input.parse_binary()
+  end
+
+  defp reduce_with_common_bit_for_each_column(%Report{elements: [first_element | _]} = report, sort_input) do
+    (0..(length(first_element) - 1))
+    |> Enum.reduce_while(report.elements, fn index, elements ->
+      column_values =
+        elements
+        |> Enum.zip()
+        |> Enum.at(index)
+        |> Tuple.to_list()
+
+      least_common_value =
+        column_values
+        |> count_common_bit_for_column()
+        |> sort_by_count(sort_input)
+        |> get_sorted_value(sort_input)
+
+      filtered_elements =
+        Enum.filter(elements, fn element ->
+          Enum.at(element, index) == least_common_value
+        end)
+
+      if length(filtered_elements) > 1 do
+        {:cont, filtered_elements}
+      else
+        {:halt, filtered_elements}
+      end
+    end)
+    |> Enum.at(0)
     |> Enum.join()
     |> Input.parse_binary()
   end
