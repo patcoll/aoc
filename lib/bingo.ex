@@ -26,10 +26,6 @@ defmodule Bingo do
     struct(Bingo, Map.merge(Input.parse_bingo(input), %{marked: marked}))
   end
 
-  def can_step?(%Bingo{previous_index: previous_index, numbers: numbers}) do
-    not is_nil(Enum.at(numbers, previous_index + 1))
-  end
-
   def step(%Bingo{previous_index: previous_index, numbers: numbers} = bingo_existing) do
     current_index = previous_index + 1
     number = Enum.fetch!(numbers, current_index)
@@ -145,10 +141,6 @@ defmodule Bingo do
     |> Enum.all?()
   end
 
-  defp boards_solved(%Bingo{marked: marked}) do
-    Enum.map(marked, &marked_board_solved?/1)
-  end
-
   def score(%Bingo{solved?: true} = bingo) do
     winning_board_index =
       bingo.board_indexes_solved
@@ -157,7 +149,15 @@ defmodule Bingo do
     score_for(bingo, winning_board_index)
   end
 
-  def score_for(%Bingo{marked: existing_marked} = bingo, board_index) do
+  defp can_step?(%Bingo{previous_index: previous_index, numbers: numbers}) do
+    not is_nil(Enum.at(numbers, previous_index + 1))
+  end
+
+  defp boards_solved(%Bingo{marked: marked}) do
+    Enum.map(marked, &marked_board_solved?/1)
+  end
+
+  defp score_for(%Bingo{marked: existing_marked} = bingo, board_index) do
     unmarked_numbers_sum =
       existing_marked
       |> Enum.with_index()
