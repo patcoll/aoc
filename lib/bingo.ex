@@ -2,7 +2,7 @@ defmodule Bingo do
   @off 0
   @on 1
 
-  defstruct previous_index: -1, numbers: [], boards: [], marked: [], solved?: false
+  defstruct previous_index: -1, numbers: [], boards: [], marked: [], solved?: false, all_solved?: false, board_indexes_solved: []
 
   def create(input) when is_binary(input) do
     bingo_data = Input.parse_bingo(input)
@@ -24,16 +24,22 @@ defmodule Bingo do
     not is_nil(Enum.at(numbers, previous_index + 1))
   end
 
-  def step(%Bingo{previous_index: previous_index, numbers: numbers} = bingo) do
+  def step(%Bingo{previous_index: previous_index, numbers: numbers} = bingo_existing) do
     current_index = previous_index + 1
     number = Enum.fetch!(numbers, current_index)
 
     bingo =
-      bingo
+      bingo_existing
       |> mark(number)
       |> Map.put(:previous_index, current_index)
 
-    %{bingo | solved?: solved?(bingo)}
+    # Figure out any newly solved boards, and add their indexes to the end.
+    # In case there is more than one newly solved, sort them then append them.
+    new_board_indexes_solved =
+      bingo.board_indexes_solved ++
+      Enum.sort(winning_board_indexes(bingo) -- bingo.board_indexes_solved)
+
+    %{bingo | solved?: solved?(bingo), all_solved?: all_solved?(bingo), board_indexes_solved: new_board_indexes_solved}
   end
 
   @doc """
@@ -76,29 +82,76 @@ defmodule Bingo do
     end)
   end
 
+  @doc """
+  iex> Bingo.create("
+  ...> 7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+  ...>
+  ...> 22 13 17 11  0
+  ...>  8  2 23  4 24
+  ...> 21  9 14 16  7
+  ...>  6 10  3 18  5
+  ...>  1 12 20 15 19
+  ...>
+  ...>  3 15  0  2 22
+  ...>  9 18 13 17  5
+  ...> 19  8  7 25 23
+  ...> 20 11 10 24  4
+  ...> 14 21 16 12  6
+  ...>
+  ...> 14 21 17 24  4
+  ...> 10 16 15  9 19
+  ...> 18  8 23 26 20
+  ...> 22 11 13  6  5
+  ...>  2  0 12  3  7
+  ...> ")
+  ...> |> Bingo.solve_all()
+  ...> |> then(&({&1.previous_index, Bingo.score(&1)}))
+  {14, 1924}
+  """
+  def solve_all(%Bingo{} = bingo_input) do
+    # step until all solved, or we ran out of numbers
+    (0..(length(bingo_input.numbers) - 1))
+    |> Enum.reduce_while(bingo_input, fn _, bingo ->
+      bingo = step(bingo)
+
+      if all_solved?(bingo) or not can_step?(bingo) do
+        {:halt, bingo}
+      else
+        {:cont, bingo}
+      end
+    end)
+  end
+
   def solved?(%Bingo{} = bingo) do
     bingo
     |> boards_solved()
     |> Enum.any?()
   end
 
+  def all_solved?(%Bingo{} = bingo) do
+    bingo
+    |> boards_solved()
+    |> Enum.all?()
+  end
+
   defp boards_solved(%Bingo{marked: marked}) do
     Enum.map(marked, &marked_board_solved?/1)
   end
 
-  def score(%Bingo{solved?: false}), do: 0
-
-  def score(%Bingo{solved?: true, marked: existing_marked} = bingo) do
+  def score(%Bingo{solved?: true} = bingo) do
     winning_board_index =
-      bingo
-      |> winning_board_indexes()
-      |> Enum.at(0)
+      bingo.board_indexes_solved
+      |> List.last()
 
+    score_for(bingo, winning_board_index)
+  end
+
+  def score_for(%Bingo{marked: existing_marked} = bingo, board_index) do
     unmarked_numbers_sum =
       existing_marked
       |> Enum.with_index()
       |> Enum.map(fn {board, i} ->
-        if i == winning_board_index do
+        if i == board_index do
           board
           |> Enum.with_index()
           |> Enum.map(fn {row, j} ->

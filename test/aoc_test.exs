@@ -385,4 +385,19 @@ defmodule AocTest do
 
     assert score == 39_902
   end
+
+  test :day_04_part_2 do
+    input =
+      Path.expand("data/d04.txt", __DIR__)
+      |> File.read!()
+
+    score =
+      input
+      |> Bingo.create()
+      |> Bingo.solve_all()
+      |> Bingo.score()
+
+    assert score == 26_936
+
+  end
 end
