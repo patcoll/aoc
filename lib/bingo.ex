@@ -23,7 +23,7 @@ defmodule Bingo do
         end)
       end)
 
-    struct(Bingo, Map.merge(Input.parse_bingo(input), %{marked: marked}))
+    struct(Bingo, Map.merge(bingo_data, %{marked: marked}))
   end
 
   def step(%Bingo{previous_index: previous_index, numbers: numbers} = bingo_existing) do
