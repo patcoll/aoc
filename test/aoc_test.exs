@@ -2,6 +2,7 @@ defmodule AocTest do
   use ExUnit.Case
 
   doctest Aoc
+  doctest Bingo
   doctest Location
   doctest Course
   doctest Input
@@ -369,5 +370,19 @@ defmodule AocTest do
     co2_scrubber_rating = Report.co2_scrubber_rating(report)
 
     assert oxygen_generator_rating * co2_scrubber_rating == 3_765_399
+  end
+
+  test :day_04 do
+    input =
+      Path.expand("data/d04.txt", __DIR__)
+      |> File.read!()
+
+    score =
+      input
+      |> Bingo.create()
+      |> Bingo.solve()
+      |> Bingo.score()
+
+    assert score == 39_902
   end
 end
