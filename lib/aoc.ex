@@ -11,7 +11,8 @@ defmodule Aoc do
   iex> Aoc.parse_depth_report([199, 200, 208, 210, 200, 207, 240, 269, 260, 263], 3)
   5
   """
-  def parse_depth_report([reading | _] = report, resolution \\ 1) when is_integer(reading) and is_integer(resolution) do
+  def parse_depth_report([reading | _] = report, resolution \\ 1)
+      when is_integer(reading) and is_integer(resolution) do
     report
     |> then(fn report ->
       if resolution > 1 do

@@ -15,7 +15,7 @@ defmodule Location do
 
   def navigate(%__MODULE__{} = location, "forward " <> amount_str) do
     amount = Input.parse_integer(amount_str)
-    %{location | depth: location.depth + (location.aim * amount), x: location.x + amount}
+    %{location | depth: location.depth + location.aim * amount, x: location.x + amount}
   end
 
   def navigate(%__MODULE__{} = location, "down " <> amount_str) do

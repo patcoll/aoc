@@ -80,8 +80,7 @@ defmodule AocTest do
       |> Input.parse_delimited_input()
       |> Enum.map(&String.to_integer/1)
 
-    result =
-      Aoc.parse_depth_report(input)
+    result = Aoc.parse_depth_report(input)
 
     assert result == 1288
   end
@@ -139,8 +138,7 @@ defmodule AocTest do
       |> Input.parse_delimited_input()
       |> Enum.map(&String.to_integer/1)
 
-    result =
-      Aoc.parse_depth_report(input, 3)
+    result = Aoc.parse_depth_report(input, 3)
 
     assert result == 1311
   end
@@ -398,6 +396,5 @@ defmodule AocTest do
       |> Bingo.score()
 
     assert score == 26_936
-
   end
 end

@@ -71,7 +71,7 @@ defmodule Report do
 
   defp count_common_bit_for_column([bit | _] = column_values) when bit in [0, 1] do
     column_values
-    |> Enum.split_with(& &1 == 0)
+    |> Enum.split_with(&(&1 == 0))
     |> Tuple.to_list()
     |> Enum.map(&Enum.count/1)
     |> Enum.with_index()
@@ -91,8 +91,11 @@ defmodule Report do
     |> Input.parse_binary()
   end
 
-  defp reduce_with_common_bit_for_each_column(%Report{elements: [first_element | _]} = report, sort_input) do
-    (0..(length(first_element) - 1))
+  defp reduce_with_common_bit_for_each_column(
+         %Report{elements: [first_element | _]} = report,
+         sort_input
+       ) do
+    0..(length(first_element) - 1)
     |> Enum.reduce_while(report.elements, fn index, elements ->
       column_values =
         elements

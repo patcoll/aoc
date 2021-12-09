@@ -2,7 +2,13 @@ defmodule Bingo do
   @off 0
   @on 1
 
-  defstruct previous_index: -1, numbers: [], boards: [], marked: [], solved?: false, all_solved?: false, board_indexes_solved: []
+  defstruct previous_index: -1,
+            numbers: [],
+            boards: [],
+            marked: [],
+            solved?: false,
+            all_solved?: false,
+            board_indexes_solved: []
 
   def create(input) when is_binary(input) do
     bingo_data = Input.parse_bingo(input)
@@ -37,9 +43,14 @@ defmodule Bingo do
     # In case there is more than one newly solved, sort them then append them.
     new_board_indexes_solved =
       bingo.board_indexes_solved ++
-      Enum.sort(winning_board_indexes(bingo) -- bingo.board_indexes_solved)
+        Enum.sort(winning_board_indexes(bingo) -- bingo.board_indexes_solved)
 
-    %{bingo | solved?: solved?(bingo), all_solved?: all_solved?(bingo), board_indexes_solved: new_board_indexes_solved}
+    %{
+      bingo
+      | solved?: solved?(bingo),
+        all_solved?: all_solved?(bingo),
+        board_indexes_solved: new_board_indexes_solved
+    }
   end
 
   @doc """
@@ -70,7 +81,7 @@ defmodule Bingo do
   """
   def solve(%Bingo{} = bingo_input) do
     # step until solved, or we ran out of numbers
-    (0..(length(bingo_input.numbers) - 1))
+    0..(length(bingo_input.numbers) - 1)
     |> Enum.reduce_while(bingo_input, fn _, bingo ->
       bingo = step(bingo)
 
@@ -110,7 +121,7 @@ defmodule Bingo do
   """
   def solve_all(%Bingo{} = bingo_input) do
     # step until all solved, or we ran out of numbers
-    (0..(length(bingo_input.numbers) - 1))
+    0..(length(bingo_input.numbers) - 1)
     |> Enum.reduce_while(bingo_input, fn _, bingo ->
       bingo = step(bingo)
 
@@ -158,7 +169,6 @@ defmodule Bingo do
             row
             |> Enum.with_index()
             |> Enum.map(fn {val, k} ->
-
               on_board =
                 bingo.boards
                 |> Enum.at(i)
@@ -179,8 +189,7 @@ defmodule Bingo do
       |> List.flatten()
       |> Enum.sum()
 
-    last_number_processed =
-      Enum.at(bingo.numbers, bingo.previous_index)
+    last_number_processed = Enum.at(bingo.numbers, bingo.previous_index)
 
     unmarked_numbers_sum * last_number_processed
   end
@@ -213,7 +222,8 @@ defmodule Bingo do
     Enum.all?(row, &(&1 == @on))
   end
 
-  defp mark(%Bingo{boards: boards, marked: existing_marked} = bingo, number) when is_integer(number) do
+  defp mark(%Bingo{boards: boards, marked: existing_marked} = bingo, number)
+       when is_integer(number) do
     marked =
       existing_marked
       |> Enum.with_index()

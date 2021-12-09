@@ -74,13 +74,17 @@ defmodule Input do
         cond do
           String.contains?(course_str, ",") ->
             ","
+
           String.contains?(course_str, "\n") ->
             "\n"
+
           String.contains?(course_str, " ") ->
             " "
+
           true ->
             ""
         end
+
       String.split(course_str, delimiter, trim: true)
     end)
     |> Enum.map(&String.trim/1)
@@ -100,6 +104,7 @@ defmodule Input do
     case Integer.parse(amount_str, base) do
       {amount_int, _} ->
         amount_int
+
       _ ->
         0
     end
