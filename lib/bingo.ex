@@ -202,7 +202,7 @@ defmodule Bingo do
     |> Enum.map(fn {_, index} -> index end)
   end
 
-  defp marked_board_solved?([[el | _] | _] = marked_board) when is_integer(el) do
+  defp marked_board_solved?([[el | _] | _] = marked_board) when el in [@on, @off] do
     any_row_solved? =
       marked_board
       |> Enum.map(&all_elements_solved?/1)
@@ -218,7 +218,7 @@ defmodule Bingo do
     any_row_solved? or any_column_solved?
   end
 
-  defp all_elements_solved?([el | _] = row) when is_integer(el) do
+  defp all_elements_solved?([el | _] = row) when el in [@on, @off] do
     Enum.all?(row, &(&1 == @on))
   end
 
