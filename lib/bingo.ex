@@ -89,7 +89,10 @@ defmodule Bingo do
   def score(%Bingo{solved?: false}), do: 0
 
   def score(%Bingo{solved?: true, marked: existing_marked} = bingo) do
-    winning_board_index = winning_board_index(bingo)
+    winning_board_index =
+      bingo
+      |> winning_board_indexes()
+      |> Enum.at(0)
 
     unmarked_numbers_sum =
       existing_marked
@@ -129,10 +132,12 @@ defmodule Bingo do
     unmarked_numbers_sum * last_number_processed
   end
 
-  defp winning_board_index(%Bingo{} = bingo) do
+  defp winning_board_indexes(%Bingo{} = bingo) do
     bingo
     |> boards_solved()
-    |> Enum.find_index(& &1 == true)
+    |> Enum.with_index()
+    |> Enum.filter(fn {solved, _} -> solved end)
+    |> Enum.map(fn {_, index} -> index end)
   end
 
   defp marked_board_solved?([[el | _] | _] = marked_board) when is_integer(el) do
