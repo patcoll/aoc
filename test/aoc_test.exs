@@ -7,6 +7,7 @@ defmodule AocTest do
   doctest Course
   doctest Input
   doctest Report
+  doctest Vents
 
   @doc """
   --- Day 1: Sonar Sweep ---
@@ -396,5 +397,33 @@ defmodule AocTest do
       |> Bingo.score()
 
     assert score == 26_936
+  end
+
+  test :day_05 do
+    input =
+      Path.expand("data/d05.txt", __DIR__)
+      |> File.read!()
+
+    count_overlapping_points =
+      input
+      |> Vents.create()
+      |> Vents.only_horizontal_and_vertical()
+      |> Vents.count_overlapping_points()
+
+    assert count_overlapping_points == 4655
+  end
+
+  test :day_05_part_2 do
+    input =
+      Path.expand("data/d05.txt", __DIR__)
+      |> File.read!()
+
+    count_overlapping_points =
+      input
+      |> Vents.create()
+      |> Vents.only_horizontal_vertical_and_diagonal()
+      |> Vents.count_overlapping_points()
+
+    assert count_overlapping_points == 20_500
   end
 end
