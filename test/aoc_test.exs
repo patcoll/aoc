@@ -3,6 +3,9 @@ defmodule AocTest do
 
   doctest Aoc
   doctest Bingo
+  doctest Fish
+  doctest Fish.EfficientWorld
+  doctest Fish.World
   doctest Location
   doctest Course
   doctest Input
@@ -425,5 +428,33 @@ defmodule AocTest do
       |> Vents.count_overlapping_points()
 
     assert count_overlapping_points == 20_500
+  end
+
+  test :day_06 do
+    input =
+      Path.expand("data/d06.txt", __DIR__)
+      |> File.read!()
+
+    count =
+      input
+      |> Fish.World.create()
+      |> Fish.World.step_times(80)
+      |> Fish.World.count()
+
+    assert count == 350_605
+  end
+
+  test :day_06_part_2 do
+    input =
+      Path.expand("data/d06.txt", __DIR__)
+      |> File.read!()
+
+    count =
+      input
+      |> Fish.EfficientWorld.create()
+      |> Fish.EfficientWorld.step_times(256)
+      |> Fish.EfficientWorld.count()
+
+    assert count == 1_592_778_185_024
   end
 end

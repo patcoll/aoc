@@ -1,5 +1,15 @@
 defmodule Input do
   @doc """
+  iex> Input.parse_fish("3,4,3,1,2")
+  [3, 4, 3, 1, 2]
+  """
+  def parse_fish(input) when is_binary(input) do
+    input
+    |> parse_delimited_input()
+    |> Enum.map(&parse_integer/1)
+  end
+
+  @doc """
   iex> Input.parse_vents("
   ...> 0,9 -> 5,9
   ...> 8,0 -> 0,8
