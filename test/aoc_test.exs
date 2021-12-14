@@ -2,6 +2,8 @@ defmodule AocTest do
   use ExUnit.Case
 
   doctest Aoc
+  doctest Crab
+  doctest Crab.World
   doctest Bingo
   doctest Fish
   doctest Fish.EfficientWorld
@@ -456,5 +458,18 @@ defmodule AocTest do
       |> Fish.EfficientWorld.count()
 
     assert count == 1_592_778_185_024
+  end
+
+  test :day_07 do
+    input =
+      Path.expand("data/d07.txt", __DIR__)
+      |> File.read!()
+
+    count =
+      input
+      |> Crab.World.create()
+      |> Crab.World.find_shortest_distance_to_alignment()
+
+    assert count == 340_987
   end
 end
