@@ -472,4 +472,17 @@ defmodule AocTest do
 
     assert count == 340_987
   end
+
+  test :day_07_part_2 do
+    input =
+      Path.expand("data/d07.txt", __DIR__)
+      |> File.read!()
+
+    count =
+      input
+      |> Crab.World.create()
+      |> Crab.World.find_more_accurate_shortest_distance_to_alignment()
+
+    assert count == 96_987_874
+  end
 end

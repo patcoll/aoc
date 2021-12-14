@@ -39,11 +39,45 @@ defmodule Crab.World do
     |> Enum.min()
   end
 
+  @doc """
+  iex> Crab.World.create("16,1,2,0,4,2,7,1,2,14")
+  ...> |> Crab.World.find_more_accurate_shortest_distance_to_alignment()
+  168
+  """
+  def find_more_accurate_shortest_distance_to_alignment(%__MODULE__{crabs: crabs}) do
+    %{min: %Crab{position: min}, max: %Crab{position: max}} =
+      crabs
+      |> find_min_and_max_crabs_by_position()
+
+    min..max
+    |> Enum.map(fn target_position ->
+      sum_of_distances =
+        crabs
+        |> Enum.map(fn %Crab{position: crab_position} ->
+          abs(target_position - crab_position)
+        end)
+        |> Enum.map(&more_accurate_distance/1)
+        |> Enum.sum()
+
+      sum_of_distances
+    end)
+    |> Enum.min()
+  end
+
   defp find_min_and_max_crabs_by_position([%Crab{} | _] = crabs) do
     sorted =
       crabs
       |> Enum.sort_by(&(&1.position))
 
     %{min: List.first(sorted), max: List.last(sorted)}
+  end
+
+  defp more_accurate_distance(distance) do
+    case distance do
+      0 -> 0
+      dist ->
+        (1..dist)
+        |> Enum.sum()
+    end
   end
 end
