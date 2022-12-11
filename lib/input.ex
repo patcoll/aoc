@@ -1,5 +1,43 @@
 defmodule Input do
   @doc """
+  iex> Input.parse_elves("
+  ...> 1000
+  ...> 2000
+  ...> 3000
+  ...>
+  ...> 4000
+  ...>
+  ...> 5000
+  ...> 6000
+  ...>
+  ...> 7000
+  ...> 8000
+  ...> 9000
+  ...>
+  ...> 10000
+  ...> ")
+  [
+		[1000, 2000, 3000],
+		[4000],
+		[5000, 6000],
+		[7000, 8000, 9000],
+		[10000]
+  ]
+  """
+  def parse_elves(input) when is_binary(input) do
+    input
+    |> String.trim()
+    |> String.split("\n\n", trim: true)
+    |> Enum.map(&String.trim/1)
+    |> Enum.map(fn line ->
+      line
+      |> String.split("\n", trim: true)
+      |> Enum.map(&String.trim/1)
+      |> Enum.map(&parse_integer/1)
+    end)
+  end
+
+  @doc """
   iex> Input.parse_fish("3,4,3,1,2")
   [3, 4, 3, 1, 2]
   """
